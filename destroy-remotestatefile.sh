@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BUCKET_NAME="bucket-pet-adoption-funmi-2025"
-AWS_PROFILE="funmi_int"
+BUCKET_NAME="funmi-2025"
+AWS_PROFILE="tutu"
 AWS_REGION="eu-west-2"
 
 # =========================
