@@ -142,10 +142,18 @@ resource "aws_iam_role_policy" "vault_kms_access" {
     ]
   })
 }
+# Attach SSM Core Policy for Session Manager Access
+resource "aws_iam_role_policy_attachment" "vault_ssm_attachment" {
+  role       = aws_iam_role.vault_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "vault-profile" {
   name = "${local.name}-vault-profile"
   role = aws_iam_role.vault_role.name
 }
+
+
 # Create IAM role for Jenkins
 resource "aws_iam_role" "jenkins-role" {
   name = "${local.name}-jenkins-role"
@@ -168,6 +176,12 @@ resource "aws_iam_role_policy_attachment" "jenkins-role-attachment" {
   role       = aws_iam_role.jenkins-role.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+# Attach SSM Core Policy for Session Manager Access
+resource "aws_iam_role_policy_attachment" "jenkins_ssm_attachment" {
+  role       = aws_iam_role.jenkins-role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # Attach the policy to the role
 resource "aws_iam_instance_profile" "jenkins-profile" {
   name = "${local.name}-jenkins-profile"

@@ -3,6 +3,12 @@ sudo yum update -y
 sudo yum install wget -y
 sudo yum install maven -y
 sudo yum install git pip -y
+# Install SSM Agent
+dnf install -y "https://s3.${region}.amazonaws.com/amazon-ssm-${region}/latest/linux_amd64/amazon-ssm-agent.rpm"
+curl -O "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
+dnf install -y session-manager-plugin.rpm
+systemctl enable amazon-ssm-agent
+systemctl start amazon-ssm-agent
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
 sudo yum upgrade -y
