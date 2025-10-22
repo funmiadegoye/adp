@@ -17,3 +17,8 @@ variable "key_name" {
   description = "EC2 Key pair name"
   type        = string
 }
+
+variable "subnet_ids" {
+  description = "List of subnet IDs for the ALB (must be >=2 for ALB best practice)"
+  type        = list(string)
+}
