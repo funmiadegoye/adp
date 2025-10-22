@@ -328,8 +328,9 @@ resource "aws_instance" "jenkins-server" {
     encrypted   = true
   }
   user_data = templatefile("./jenkins_userdata.sh", {
-    nr-key    = var.nr-key,
+    nr-key    = var.nr-key
     nr-acc-id = var.nr-acc-id
+    region    = var.region
   })
 
   tags = {
