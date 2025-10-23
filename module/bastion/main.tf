@@ -12,12 +12,9 @@ resource "aws_security_group" "bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(
-    var.common_tags,
-    {
-      Name = "${var.name}-bastion-sg"
-    }
-  )
+ tags = {
+    Name = "${var.name}-bastion-sg"
+  }
 }
 
 # Create IAM role for SSM
@@ -35,12 +32,9 @@ resource "aws_iam_role" "bastion_ssm_role" {
     }]
   })
 
-  tags = merge(
-    var.common_tags,
-    {
-      Name = "${var.name}-bastion-ssmrole"
-    }
-  )
+ tags = {
+    Name = "${var.name}-bastion-ssmrole"
+  }
 }
 
 # Attach SSM Core Policy for Session Manager Access
@@ -72,7 +66,7 @@ data "aws_ami" "redhat" {
 resource "aws_launch_template" "bastion_lt" {
   name_prefix   = "${var.name}-bastion"
   image_id      = data.aws_ami.redhat.id
-  instance_type = var.instance_type
+  instance_type = "t2.micro"
   key_name      = var.keypair
   
   iam_instance_profile {
@@ -92,32 +86,15 @@ resource "aws_launch_template" "bastion_lt" {
     region       = var.region,
     
   }))
-
-  tag_specifications {
-    resource_type = "instance"
-    tags = merge(
-      var.common_tags,
-      {
-        Name = "${var.name}-bastion"
-      }
-    )
-  }
-
-  tags = merge(
-    var.common_tags,
-    {
-      Name = "${var.name}-bastion-lt"
-    }
-  )
 }
 
 # Create Auto Scaling Group for Bastion
 resource "aws_autoscaling_group" "bastion_asg" {
   name                      = "${var.name}-bastion-asg"
-  max_size                  = var.max_size
-  min_size                  = var.min_size
-  desired_capacity          = var.desired_capacity
-  health_check_grace_period = 120
+  max_size                  = 1
+  min_size                  = 1
+  desired_capacity          = 1
+  health_check_grace_period = 300
   health_check_type         = "EC2"
   force_delete              = true
   
@@ -133,15 +110,6 @@ resource "aws_autoscaling_group" "bastion_asg" {
     value               = "${var.name}-bastion-asg"
     propagate_at_launch = true
   }
-
-  dynamic "tag" {
-    for_each = var.common_tags
-    content {
-      key                 = tag.key
-      value               = tag.value
-      propagate_at_launch = true
-    }
-  }
 }
 
 # Create ASG policy for Bastion Host
@@ -156,7 +124,7 @@ resource "aws_autoscaling_policy" "bastion_asg_policy" {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-    target_value = var.cpu_utilization_target
+    target_value = 70
   }
 }
 

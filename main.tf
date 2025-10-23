@@ -16,3 +16,15 @@ module "nexus" {
   subnet_ids = module.vpc.private_subnet_ids
   key_name   = module.vpc.public_key_name
 }
+
+module "bastion" {
+  source    = "./module/bastion"
+  name      = local.name
+  vpc_id    = module.vpc.vpc_id
+  subnets   = module.vpc.public_subnet_ids
+  keypair   = module.vpc.public_key_name
+  privatekey = module.vpc.private_key_pem
+  nr-key    = "NRAK-EALLCYVB0O491YGB6UW105ED8ZT"
+  nr-acc-id = "7181908"
+  region    = "eu-west-2"
+}
